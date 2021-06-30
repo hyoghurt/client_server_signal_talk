@@ -1,26 +1,36 @@
 NAME1			= client
 NAME2			= server
 
-SRC				=	server.c	\
-					client.c \
+SRC_S			=	src/server.c	\
+					src/ft_strdup.c	\
+					src/ft_strlen.c	\
+					src/ft_atoi.c	\
+					src/ft_itoa.c	\
+
+SRC_C			=	src/client.c	\
+					src/ft_strdup.c	\
+					src/ft_strlen.c	\
+					src/ft_atoi.c	\
+					src/ft_itoa.c	\
 
 SRCDIR			= src
 OBJDIR			= obj
-OBJ				= $(addprefix $(OBJDIR)/,$(notdir $(SRC:.c=.o)))
+OBJ_S			= $(addprefix $(OBJDIR)/,$(notdir $(SRC_S:.c=.o)))
+OBJ_C			= $(addprefix $(OBJDIR)/,$(notdir $(SRC_C:.c=.o)))
 CC				= gcc
 CFLAGS			= -Wall -Wextra -Werror
 
-$(NAME1):		$(OBJ) | $(NAME2)
-				$(CC) obj/client.o -o client
+$(NAME1):		$(OBJ_C) | $(NAME2)
+				$(CC) $(OBJ_C) -o $(NAME1)
 
-$(NAME2):		$(OBJ)
-				$(CC) obj/server.o -o server
+$(NAME2):		$(OBJ_S)
+				$(CC) $(OBJ_S) -o $(NAME2)
 
 $(OBJDIR):			
 				mkdir -p $@
 
-$(OBJDIR)/%.o:	%.c | $(OBJDIR)
-				$(CC) -c -MD $< -o $@
+$(OBJDIR)/%.o:	$(SRCDIR)/%.c | $(OBJDIR)
+				$(CC) -I. -c -MD $< -o $@
 
 include $(wildcard $(OBJDIR)/*.d)
 
