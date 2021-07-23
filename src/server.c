@@ -1,35 +1,39 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hyoghurt <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/07/09 19:51:14 by hyoghurt          #+#    #+#             */
+/*   Updated: 2021/07/09 19:51:15 by hyoghurt         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minitalk.h"
 
-void term_handler(int sig, siginfo_t *info, void *vo)
+int	main(void)
 {
-	static char				r;
-	static unsigned char	c;
+	struct sigaction	sa;
+	sigset_t			newset;
 
-	if (sig == 0)
-	{
-		r = 0;
-		c = 128;
-	}
-	else
-	{
-		if (sig == SIGUSR1)
-			r += c;
-		c /= 2;
-		if (c < 1)
-		{
-			if (r == 0)
-				write(1, "\n", 1);
-			else
-				write(1, &r, 1);
-			r = 0;
-			c = 128;
-		}
-		kill(info->si_pid, SIGUSR1);
-	}
+	if (sigaddset(&newset, SIGUSR1) != 0)
+		return (1);
+	if (sigaddset(&newset, SIGUSR2) != 0)
+		return (1);
+	if (sigemptyset(&newset) != 0)
+		return (1);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = term_handler;
+	if (sigaction(SIGUSR1, &sa, 0) != 0)
+		return (1);
+	if (sigaction(SIGUSR2, &sa, 0) != 0)
+		return (1);
+	if (!start())
+		return (1);
+	while (1)
+		sleep(1);
+	return (0);
 }
 
 int	start(void)
@@ -49,28 +53,43 @@ int	start(void)
 	return (1);
 }
 
-int main(void)
+void	term_handler(int sig, siginfo_t *info, void *v)
 {
-	struct sigaction	sa;
-	sigset_t			newset;
+	static char				r;
+	static unsigned char	c;
 
-	if (sigaddset(&newset, SIGUSR1) != 0)
-		return (1);
-	if (sigaddset(&newset, SIGUSR2) != 0)
-		return (1);
-	if (sigemptyset(&newset) != 0)
-		return (1);
-	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = term_handler;
-	//sa.sa_handler = term_handler;
-	//sa.sa_flags = SA_RESTART;
-	if (sigaction(SIGUSR1, &sa, 0) != 0)
-		return (1);
-	if (sigaction(SIGUSR2, &sa, 0) != 0)
-		return (1);
-	if (!start())
-		return (1);
-	while(1)
+	if (sig == 0 && v == 0)
+	{
+		r = 0;
+		c = 128;
+	}
+	else
+	{
+		if (sig == SIGUSR1)
+			r += c;
+		c /= 2;
+		if (c < 1)
+		{
+			if (!t_print(r, info->si_pid))
+				exit (1);
+			r = 0;
+			c = 128;
+		}
 		usleep(100);
-	return (0);
+		if (kill(info->si_pid, SIGUSR1) == -1)
+			exit (1);
+	}
+}
+
+int	t_print(char r, pid_t pid)
+{
+	if (r == 0)
+	{
+		if (kill(pid, SIGUSR2) == -1)
+			return (0);
+		write(1, "\n", 1);
+	}
+	else
+		write(1, &r, 1);
+	return (1);
 }
