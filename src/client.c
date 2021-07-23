@@ -6,7 +6,7 @@
 /*   By: hyoghurt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/09 19:51:06 by hyoghurt          #+#    #+#             */
-/*   Updated: 2021/07/09 19:51:08 by hyoghurt         ###   ########.fr       */
+/*   Updated: 2021/07/23 18:51:30 by hyoghurt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	set_string(int pid, char *s)
 			}
 			pause();
 			i /= 2;
-			usleep(100);
+			usleep(50);
 		}
 		s++;
 	}
@@ -76,6 +76,6 @@ void	set_nl(int pid)
 			exit (1);
 		pause();
 		i /= 2;
-		usleep(100);
+		usleep(50);
 	}
 }

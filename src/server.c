@@ -6,7 +6,7 @@
 /*   By: hyoghurt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/09 19:51:14 by hyoghurt          #+#    #+#             */
-/*   Updated: 2021/07/09 19:51:15 by hyoghurt         ###   ########.fr       */
+/*   Updated: 2021/07/23 18:40:34 by hyoghurt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	term_handler(int sig, siginfo_t *info, void *v)
 			r = 0;
 			c = 128;
 		}
-		usleep(100);
+		usleep(50);
 		if (kill(info->si_pid, SIGUSR1) == -1)
 			exit (1);
 	}
